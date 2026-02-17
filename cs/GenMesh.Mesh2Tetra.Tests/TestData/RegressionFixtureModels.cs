@@ -12,14 +12,14 @@ public sealed class RegressionFixture
 
 public sealed class FixtureInput
 {
-    public required List<double[]> Vertices { get; init; }
-    public required List<int[]> Faces { get; init; }
+    public List<double[]> Vertices { get; init; } = [];
+    public List<int[]> Faces { get; init; } = [];
 }
 
 public sealed class FixtureExpected
 {
-    public required int TetraCount { get; init; }
-    public required double TetraVolume { get; init; }
+    public int TetraCount { get; init; }
+    public double TetraVolume { get; init; }
     public double VolumeTolerance { get; init; } = 1e-8;
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
