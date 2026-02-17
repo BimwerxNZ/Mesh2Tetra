@@ -11,7 +11,7 @@ public sealed class MatlabRegressionTests
 
     [Theory]
     [MemberData(nameof(Fixtures))]
-    public void ConvertsFixtureWithExpectedParity(RegressionFixture fixture, string _) 
+    public void ConvertsFixtureWithExpectedParity(RegressionFixture fixture, string _)
     {
         var vertices = fixture.Input.Vertices
             .Select(v => new Vector3d(v[0], v[1], v[2]))
@@ -27,10 +27,7 @@ public sealed class MatlabRegressionTests
             FailOnSelfIntersections = fixture.Options.CheckSelfIntersections,
             Verbose = fixture.Options.Verbose,
             PlaneDistanceTolerance = fixture.Options.PlaneDistanceTolerance,
-<<<<<<< codex/develop-full-regression-suite-for-matlab-fixtures
             Epsilon = fixture.Options.Epsilon,
-=======
->>>>>>> main
         };
 
         var tets = Mesh2TetraConverter.Convert(vertices, faces, options);
