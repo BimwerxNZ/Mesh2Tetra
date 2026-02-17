@@ -6,7 +6,10 @@ namespace GenMesh.Mesh2Tetra.Algorithms;
 
 internal static class DelaunayInside3D
 {
-    public static IReadOnlyList<Tetrahedron> Build(IReadOnlyList<Vector3d> vertices, IReadOnlyList<Face> boundaryFaces, Mesh2TetraOptions options)
+    public static (IReadOnlyList<Tetrahedron> Tetrahedra, IReadOnlyList<Face> RemainingFaces) Build(
+        IReadOnlyList<Vector3d> vertices,
+        IReadOnlyList<Face> boundaryFaces,
+        Mesh2TetraOptions options)
     {
         var delaunayVertices = vertices.Select((v, i) => new DVertex(i, v)).ToList();
         var triangulation = DelaunayTriangulation<DVertex, DefaultTriangulationCell<DVertex>>.Create(delaunayVertices);
@@ -30,7 +33,8 @@ internal static class DelaunayInside3D
             }
         }
 
-        return result;
+        var remainingFaces = MeshTopology.GetRemainingFaces(result, boundaryFaces);
+        return (result, remainingFaces);
     }
 
     private sealed class DVertex(int id, Vector3d p) : IVertex

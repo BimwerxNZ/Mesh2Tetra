@@ -23,13 +23,14 @@ public static class Mesh2TetraConverter
             Console.WriteLine($"[Mesh2Tetra] Input volume: {sourceVolume:0.########}");
         }
 
-        var delaunay = DelaunayInside3D.Build(vertices, faces, options);
+        var (delaunayTets, remainingFaces) = DelaunayInside3D.Build(vertices, faces, options);
         if (options.Verbose)
         {
-            Console.WriteLine($"[Mesh2Tetra] Delaunay tets: {delaunay.Count}");
+            Console.WriteLine($"[Mesh2Tetra] Delaunay tets: {delaunayTets.Count}");
+            Console.WriteLine($"[Mesh2Tetra] Residual faces: {remainingFaces.Count}");
         }
 
-        var final = BoundaryCollapse3D.FillResidualVolume(vertices, faces, delaunay, options);
+        var final = BoundaryCollapse3D.FillResidualVolume(vertices, remainingFaces, delaunayTets, options);
         if (options.Verbose)
         {
             Console.WriteLine($"[Mesh2Tetra] Final tets: {final.Count}");

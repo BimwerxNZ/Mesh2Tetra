@@ -51,6 +51,76 @@ internal static class GeometryPredicates
         return acc;
     }
 
+    public static bool HasOrientationImbalance(IReadOnlyList<Face> faces)
+    {
+        var edgeCounts = new Dictionary<(int, int), int>();
+        foreach (var f in faces)
+        {
+            AddEdge(f.A, f.B);
+            AddEdge(f.B, f.C);
+            AddEdge(f.C, f.A);
+        }
+
+        foreach (var kv in edgeCounts)
+        {
+            var reverse = (kv.Key.Item2, kv.Key.Item1);
+            edgeCounts.TryGetValue(reverse, out var rev);
+            if (kv.Value != rev)
+            {
+                return true;
+            }
+        }
+
+        return false;
+
+        void AddEdge(int a, int b)
+        {
+            var key = (a, b);
+            edgeCounts.TryGetValue(key, out var c);
+            edgeCounts[key] = c + 1;
+        }
+    }
+
+    public static bool CheckMoveInside3D(IReadOnlyList<Vector3d> vertices, IReadOnlyList<Face> newFaces, int vertexId)
+    {
+        var p = vertices[vertexId];
+        foreach (var f in newFaces)
+        {
+            var a = vertices[f.A];
+            var b = vertices[f.B];
+            var c = vertices[f.C];
+
+            var normal = Vector3d.Cross(a - c, b - c);
+            var normalNorm = normal.Norm();
+            if (normalNorm <= 1e-12) return false;
+            normal /= normalNorm;
+
+            var planeClosest = PointToClosestPointOnPlane(a, b, c, p);
+            var normal2 = p - planeClosest;
+            var normal2Norm = normal2.Norm();
+            if (normal2Norm <= 1e-12) return false;
+            normal2 /= normal2Norm;
+
+            var diff = normal - normal2;
+            if ((diff.X * diff.X + diff.Y * diff.Y + diff.Z * diff.Z) >= 1e-5)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static Vector3d PointToClosestPointOnPlane(Vector3d a, Vector3d b, Vector3d c, Vector3d p)
+    {
+        var n = Vector3d.Cross(b - a, c - a);
+        var nNorm = n.Norm();
+        if (nNorm <= 1e-12) return p;
+        n /= nNorm;
+        var distance = Vector3d.Dot(p - a, n);
+        return p - new Vector3d(n.X * distance, n.Y * distance, n.Z * distance);
+    }
+
     public static bool PointInsideClosedMesh(Vector3d p, IReadOnlyList<Vector3d> vertices, IReadOnlyList<Face> faces)
     {
         var dir = new Vector3d(1, 0.137, 0.071);
