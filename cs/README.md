@@ -25,6 +25,7 @@ The original Matlab implementation is a 2-phase constrained tetrahedralization p
 - `Algorithms/GeometryPredicates` = shared volume/orientation/inside/intersection checks.
 - `Algorithms/MeshTopology` = tetra face/topology/object helpers.
 - `Algorithms/MeshValidation` = input validation.
+- `Algorithms/MeshPreprocessing` = boundary face cleanup and intersection handling.
 
 ## Current status
 
@@ -39,5 +40,5 @@ The original Matlab implementation is a 2-phase constrained tetrahedralization p
 
 ## Remaining work
 
-- ⚠️ Partial input auto-repair is present (automatic global face orientation flip); full `solveInterSections` parity is still not ported.
+- ⚠️ Partial input auto-repair is present (global orientation flip, duplicate-face cancellation, degenerate-face filtering, and conservative intersection cleanup); full `solveInterSections` parity is still not ported.
 - ⚠️ Full regression suite against Matlab fixtures is still needed for parity confidence.
