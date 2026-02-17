@@ -4,6 +4,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenMesh.Mesh2Tetra", "GenMesh.Mesh2Tetra/GenMesh.Mesh2Tetra.csproj", "{26A57C84-53AA-4CC5-BA9F-69D8A7547CE2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenMesh.Mesh2Tetra.Tests", "GenMesh.Mesh2Tetra.Tests/GenMesh.Mesh2Tetra.Tests.csproj", "{430ED55F-AE76-4F7E-AEDB-8E93CDFC984B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -14,5 +16,9 @@ Global
 		{26A57C84-53AA-4CC5-BA9F-69D8A7547CE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26A57C84-53AA-4CC5-BA9F-69D8A7547CE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26A57C84-53AA-4CC5-BA9F-69D8A7547CE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{430ED55F-AE76-4F7E-AEDB-8E93CDFC984B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{430ED55F-AE76-4F7E-AEDB-8E93CDFC984B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{430ED55F-AE76-4F7E-AEDB-8E93CDFC984B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{430ED55F-AE76-4F7E-AEDB-8E93CDFC984B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
