@@ -11,30 +11,103 @@ internal static class DelaunayInside3D
         IReadOnlyList<Face> boundaryFaces,
         Mesh2TetraOptions options)
     {
-        var delaunayVertices = vertices.Select((v, i) => new DVertex(i, v)).ToList();
-        var triangulation = DelaunayTriangulation<DVertex, DefaultTriangulationCell<DVertex>>.Create(delaunayVertices);
+        var tetrahedra = BuildRecursive(vertices, boundaryFaces, options, depth: 0);
+        var remainingFaces = MeshTopology.GetRemainingFaces(tetrahedra, boundaryFaces);
+        return (tetrahedra, remainingFaces);
+    }
+
+    private static List<Tetrahedron> BuildRecursive(
+        IReadOnlyList<Vector3d> vertices,
+        IReadOnlyList<Face> faces,
+        Mesh2TetraOptions options,
+        int depth)
+    {
+        var objects = MeshTopology.SeparateFaceObjects(faces);
+        var total = new List<Tetrahedron>();
+
+        foreach (var obj in objects)
+        {
+            var (localVertices, localFaces, globalVertexIds) = MeshTopology.InsidePoints3D(vertices, obj);
+            if (localVertices.Count < 4 || localFaces.Count < 4)
+            {
+                continue;
+            }
+
+            var localTets = BuildLocal(localVertices, localFaces, options);
+            if (localTets.Count == 0)
+            {
+                continue;
+            }
+
+            var localRemaining = MeshTopology.GetRemainingFaces(localTets, localFaces);
+            var localBoundaryVolume = GeometryPredicates.FaceMeshVolume(localVertices, localFaces);
+            var localTetVolume = GeometryPredicates.TetraMeshVolume(localVertices, localTets);
+            var localRemainVolume = GeometryPredicates.FaceMeshVolume(localVertices, localRemaining);
+            var diff = (localRemainVolume + localTetVolume) - localBoundaryVolume;
+
+            if (Math.Abs(diff) > 1e-8)
+            {
+                continue;
+            }
+
+            if (GeometryPredicates.HasMeshIntersections(localVertices, localRemaining))
+            {
+                continue;
+            }
+
+            if (localRemaining.Count > 0 && depth < options.MaxDelaunayRecursionDepth)
+            {
+                var recurse = BuildRecursive(localVertices, localRemaining, options, depth + 1);
+                localTets.AddRange(recurse);
+                localRemaining = MeshTopology.GetRemainingFaces(localTets, localFaces);
+            }
+
+            foreach (var lt in localTets)
+            {
+                total.Add(new Tetrahedron(
+                    globalVertexIds[lt.A],
+                    globalVertexIds[lt.B],
+                    globalVertexIds[lt.C],
+                    globalVertexIds[lt.D]));
+            }
+        }
+
+        return total;
+    }
+
+    private static List<Tetrahedron> BuildLocal(
+        IReadOnlyList<Vector3d> localVertices,
+        IReadOnlyList<Face> localFaces,
+        Mesh2TetraOptions options)
+    {
+        var dverts = localVertices.Select((v, i) => new DVertex(i, v)).ToList();
+        var triangulation = DelaunayTriangulation<DVertex, DefaultTriangulationCell<DVertex>>.Create(
+            dverts,
+            options.PlaneDistanceTolerance);
 
         var result = new List<Tetrahedron>();
         foreach (var cell in triangulation.Cells)
         {
             var ids = cell.Vertices.Select(v => v.Id).ToArray();
-            var centroid = (vertices[ids[0]] + vertices[ids[1]] + vertices[ids[2]] + vertices[ids[3]]) / 4d;
-
-            if (!GeometryPredicates.PointInsideClosedMesh(centroid, vertices, boundaryFaces))
+            var centroid = (localVertices[ids[0]] + localVertices[ids[1]] + localVertices[ids[2]] + localVertices[ids[3]]) / 4d;
+            if (!GeometryPredicates.PointInsideClosedMesh(centroid, localVertices, localFaces))
             {
                 continue;
             }
 
             var tet = new Tetrahedron(ids[0], ids[1], ids[2], ids[3]);
-            var volume = Math.Abs(GeometryPredicates.SignedTetraVolume(vertices[tet.A], vertices[tet.B], vertices[tet.C], vertices[tet.D]));
+            var volume = Math.Abs(GeometryPredicates.SignedTetraVolume(
+                localVertices[tet.A],
+                localVertices[tet.B],
+                localVertices[tet.C],
+                localVertices[tet.D]));
             if (volume > options.Epsilon)
             {
                 result.Add(tet);
             }
         }
 
-        var remainingFaces = MeshTopology.GetRemainingFaces(result, boundaryFaces);
-        return (result, remainingFaces);
+        return result;
     }
 
     private sealed class DVertex(int id, Vector3d p) : IVertex

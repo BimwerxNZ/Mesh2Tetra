@@ -96,7 +96,7 @@ internal static class BoundaryCollapse3D
                 {
                     var newTetFaces = addedTets
                         .SelectMany(MeshTopology.GetTetFaces)
-                        .Concat(boundary)
+                        .Concat(b2)
                         .ToList();
                     if (GeometryPredicates.HasMeshIntersections(vertices, newTetFaces, maxOuterFaces: addedTets.Count * 4))
                     {

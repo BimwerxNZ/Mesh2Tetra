@@ -1,3 +1,4 @@
+using GenMesh.Mesh2Tetra.Geometry;
 using GenMesh.Mesh2Tetra.Models;
 
 namespace GenMesh.Mesh2Tetra.Algorithms;
@@ -23,6 +24,83 @@ internal static class MeshTopology
         }
 
         return allFaces.Where(f => counts[Canonical(f)] == 1).ToList();
+    }
+
+    public static List<List<Face>> SeparateFaceObjects(IReadOnlyList<Face> faces)
+    {
+        if (faces.Count == 0) return [];
+
+        var vertToFaces = new Dictionary<int, List<int>>();
+        for (var i = 0; i < faces.Count; i++)
+        {
+            AddVertexFace(faces[i].A, i);
+            AddVertexFace(faces[i].B, i);
+            AddVertexFace(faces[i].C, i);
+        }
+
+        var visited = new bool[faces.Count];
+        var objects = new List<List<Face>>();
+        for (var i = 0; i < faces.Count; i++)
+        {
+            if (visited[i]) continue;
+            var component = new List<Face>();
+            var q = new Queue<int>();
+            q.Enqueue(i);
+            visited[i] = true;
+
+            while (q.Count > 0)
+            {
+                var fi = q.Dequeue();
+                var face = faces[fi];
+                component.Add(face);
+
+                VisitNeighbors(face.A);
+                VisitNeighbors(face.B);
+                VisitNeighbors(face.C);
+            }
+
+            objects.Add(component);
+        }
+
+        return objects;
+
+        void AddVertexFace(int vertex, int faceIndex)
+        {
+            if (!vertToFaces.TryGetValue(vertex, out var list))
+            {
+                list = [];
+                vertToFaces[vertex] = list;
+            }
+
+            list.Add(faceIndex);
+        }
+
+        void VisitNeighbors(int vertex)
+        {
+            if (!vertToFaces.TryGetValue(vertex, out var neigh)) return;
+            foreach (var ni in neigh)
+            {
+                if (visited[ni]) continue;
+                visited[ni] = true;
+                q.Enqueue(ni);
+            }
+        }
+    }
+
+    public static (List<Vector3d> Vertices, List<Face> Faces, int[] GlobalVertexIds) InsidePoints3D(
+        IReadOnlyList<Vector3d> allVertices,
+        IReadOnlyList<Face> objectFaces)
+    {
+        var globalIds = objectFaces.SelectMany(f => new[] { f.A, f.B, f.C }).Distinct().OrderBy(i => i).ToArray();
+        var g2l = new Dictionary<int, int>(globalIds.Length);
+        for (var i = 0; i < globalIds.Length; i++)
+        {
+            g2l[globalIds[i]] = i;
+        }
+
+        var localVertices = globalIds.Select(id => allVertices[id]).ToList();
+        var localFaces = objectFaces.Select(f => new Face(g2l[f.A], g2l[f.B], g2l[f.C])).ToList();
+        return (localVertices, localFaces, globalIds);
     }
 
     public static IEnumerable<Face> GetTetFaces(Tetrahedron t)
