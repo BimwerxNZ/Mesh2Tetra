@@ -31,6 +31,5 @@ public sealed class FixtureOptions
     public bool CheckInput { get; init; } = true;
     public bool CheckSelfIntersections { get; init; } = true;
     public bool Verbose { get; init; }
-    public bool CheckOutputVolume { get; init; } = true;
     public double PlaneDistanceTolerance { get; init; } = 1e-10;
 }

@@ -1,3 +1,4 @@
+using Xunit;
 using GenMesh.Mesh2Tetra.Geometry;
 using GenMesh.Mesh2Tetra.Models;
 using GenMesh.Mesh2Tetra.Tests.TestData;
@@ -22,9 +23,9 @@ public sealed class MatlabRegressionTests
         var options = new Mesh2TetraOptions
         {
             CheckInput = fixture.Options.CheckInput,
-            CheckSelfIntersections = fixture.Options.CheckSelfIntersections,
+            AutoResolveIntersections = fixture.Options.CheckSelfIntersections,
+            FailOnSelfIntersections = fixture.Options.CheckSelfIntersections,
             Verbose = fixture.Options.Verbose,
-            CheckOutputVolume = fixture.Options.CheckOutputVolume,
             PlaneDistanceTolerance = fixture.Options.PlaneDistanceTolerance,
         };
 
