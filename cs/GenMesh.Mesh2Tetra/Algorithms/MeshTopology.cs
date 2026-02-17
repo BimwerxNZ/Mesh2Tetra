@@ -54,9 +54,9 @@ internal static class MeshTopology
                 var face = faces[fi];
                 component.Add(face);
 
-                VisitNeighbors(face.A);
-                VisitNeighbors(face.B);
-                VisitNeighbors(face.C);
+                VisitNeighbors(face.A, q);
+                VisitNeighbors(face.B, q);
+                VisitNeighbors(face.C, q);
             }
 
             objects.Add(component);
@@ -75,17 +75,20 @@ internal static class MeshTopology
             list.Add(faceIndex);
         }
 
-        void VisitNeighbors(int vertex)
+        void VisitNeighbors(int vertex, Queue<int> queue)
         {
             if (!vertToFaces.TryGetValue(vertex, out var neigh)) return;
             foreach (var ni in neigh)
             {
                 if (visited[ni]) continue;
                 visited[ni] = true;
-                q.Enqueue(ni);
+                queue.Enqueue(ni);
             }
         }
     }
+
+    public static List<Face> FlipOrientation(IReadOnlyList<Face> faces)
+        => faces.Select(f => new Face(f.C, f.B, f.A)).ToList();
 
     public static (List<Vector3d> Vertices, List<Face> Faces, int[] GlobalVertexIds) InsidePoints3D(
         IReadOnlyList<Vector3d> allVertices,

@@ -39,5 +39,5 @@ The original Matlab implementation is a 2-phase constrained tetrahedralization p
 
 ## Remaining work
 
-- ⚠️ Matlab-style input auto-repair (`solveInterSections`, automatic orientation swap) is not ported yet.
+- ⚠️ Partial input auto-repair is present (automatic global face orientation flip); full `solveInterSections` parity is still not ported.
 - ⚠️ Full regression suite against Matlab fixtures is still needed for parity confidence.

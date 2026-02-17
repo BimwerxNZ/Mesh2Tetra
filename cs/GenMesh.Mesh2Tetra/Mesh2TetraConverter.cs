@@ -17,13 +17,24 @@ public static class Mesh2TetraConverter
             MeshValidation.ValidateInput(vertices, faces);
         }
 
-        var sourceVolume = GeometryPredicates.FaceMeshVolume(vertices, faces);
+        var boundaryFaces = faces.ToList();
+        if (options.AutoFixFaceOrientation && GeometryPredicates.HasOrientationImbalance(boundaryFaces))
+        {
+            if (options.Verbose)
+            {
+                Console.WriteLine("[Mesh2Tetra] Detected orientation imbalance; flipping face orientation.");
+            }
+
+            boundaryFaces = MeshTopology.FlipOrientation(boundaryFaces);
+        }
+
+        var sourceVolume = GeometryPredicates.FaceMeshVolume(vertices, boundaryFaces);
         if (options.Verbose)
         {
             Console.WriteLine($"[Mesh2Tetra] Input volume: {sourceVolume:0.########}");
         }
 
-        var (delaunayTets, remainingFaces) = DelaunayInside3D.Build(vertices, faces, options);
+        var (delaunayTets, remainingFaces) = DelaunayInside3D.Build(vertices, boundaryFaces, options);
         if (options.Verbose)
         {
             Console.WriteLine($"[Mesh2Tetra] Delaunay tets: {delaunayTets.Count}");
