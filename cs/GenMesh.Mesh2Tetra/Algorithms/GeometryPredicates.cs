@@ -112,9 +112,13 @@ internal static class GeometryPredicates
     }
 
     public static bool HasMeshIntersections(IReadOnlyList<Vector3d> vertices, IReadOnlyList<Face> faces, int maxOuterFaces = -1)
+        => FindIntersectingFacePairs(vertices, faces, maxOuterFaces).Count > 0;
+
+    public static List<(int I, int J)> FindIntersectingFacePairs(IReadOnlyList<Vector3d> vertices, IReadOnlyList<Face> faces, int maxOuterFaces = -1)
     {
+        var pairs = new List<(int I, int J)>();
         var nF = faces.Count;
-        if (nF <= 1) return false;
+        if (nF <= 1) return pairs;
         var nMax = maxOuterFaces < 0 ? nF - 1 : Math.Min(maxOuterFaces, nF - 1);
 
         for (var j = 0; j < nMax; j++)
@@ -134,12 +138,12 @@ internal static class GeometryPredicates
                 var p3 = vertices[fi.C];
                 if (TriangleTriangleIntersection(p1, p2, p3, o1, o2, o3, ignoreCorners: true))
                 {
-                    return true;
+                    pairs.Add((j, i));
                 }
             }
         }
 
-        return false;
+        return pairs;
     }
 
     public static bool TriangleTriangleIntersection(

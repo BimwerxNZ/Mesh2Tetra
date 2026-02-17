@@ -7,6 +7,7 @@ public sealed class Mesh2TetraOptions
     public bool AutoFixFaceOrientation { get; init; } = true;
     public bool AutoResolveIntersections { get; init; } = true;
     public bool FailOnSelfIntersections { get; init; } = true;
+    public int MaxSolveIntersectionIterations { get; init; } = 50;
     public double Epsilon { get; init; } = 1e-8;
     public double PlaneDistanceTolerance { get; init; } = 1e-10;
     public int MaxDelaunayRecursionDepth { get; init; } = 8;

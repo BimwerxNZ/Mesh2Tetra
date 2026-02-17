@@ -12,26 +12,26 @@ internal static class MeshPreprocessing
     {
         var result = faces.ToList();
 
-        // Drop numerically-degenerate triangles.
         result = result.Where(f => !IsDegenerateByArea(vertices[f.A], vertices[f.B], vertices[f.C], options.Epsilon)).ToList();
-
-        // Resolve exact duplicate triangles (same 3 vertices, any winding) by pair-cancellation.
         result = RemoveDuplicateFacePairs(result);
 
-        // Parity helper: attempt global orientation flip if enabled and needed.
         if (options.AutoFixFaceOrientation && GeometryPredicates.HasOrientationImbalance(result))
         {
             result = MeshTopology.FlipOrientation(result);
         }
 
-        var hasIntersections = GeometryPredicates.HasMeshIntersections(vertices, result);
-        if (hasIntersections && options.AutoResolveIntersections)
+        if (options.AutoResolveIntersections)
         {
-            // Minimal deterministic fallback: remove all faces participating in detected intersection pairs.
-            var filtered = RemoveIntersectingFaces(vertices, result);
-            if (filtered.Count >= 4 && !GeometryPredicates.HasMeshIntersections(vertices, filtered))
+            result = SolveIntersectionsByLocalCollapse(vertices, result, options);
+
+            // final conservative fallback
+            if (GeometryPredicates.HasMeshIntersections(vertices, result))
             {
-                result = filtered;
+                var filtered = RemoveIntersectingFaces(vertices, result);
+                if (filtered.Count >= 4 && !GeometryPredicates.HasMeshIntersections(vertices, filtered))
+                {
+                    result = filtered;
+                }
             }
         }
 
@@ -40,6 +40,121 @@ internal static class MeshPreprocessing
             throw new InvalidOperationException(
                 "Boundary mesh still has self-intersections after preprocessing. " +
                 "Disable FailOnSelfIntersections to continue at your own risk.");
+        }
+
+        return result;
+    }
+
+    private static List<Face> SolveIntersectionsByLocalCollapse(
+        IReadOnlyList<Vector3d> vertices,
+        List<Face> faces,
+        Mesh2TetraOptions options)
+    {
+        var current = faces;
+        var previousCount = int.MaxValue;
+
+        for (var iteration = 0; iteration < options.MaxSolveIntersectionIterations; iteration++)
+        {
+            var pairs = GeometryPredicates.FindIntersectingFacePairs(vertices, current);
+            var intersectionCount = pairs.Count * 2;
+            if (intersectionCount == 0)
+            {
+                return current;
+            }
+
+            if (intersectionCount >= previousCount)
+            {
+                break;
+            }
+
+            previousCount = intersectionCount;
+            var involvedFaceIndices = pairs.SelectMany(p => new[] { p.I, p.J }).Distinct().ToArray();
+            var involvedVertices = involvedFaceIndices
+                .SelectMany(i => new[] { current[i].A, current[i].B, current[i].C })
+                .Distinct()
+                .ToArray();
+
+            var improved = false;
+            foreach (var vertexId in involvedVertices)
+            {
+                var localRows = current
+                    .Select((f, idx) => (f, idx))
+                    .Where(x => x.f.A == vertexId || x.f.B == vertexId || x.f.C == vertexId)
+                    .Select(x => x.idx)
+                    .ToList();
+
+                if (localRows.Count == 0) continue;
+                var localFaces = localRows.Select(i => current[i]).ToList();
+                var neighbors = localFaces
+                    .SelectMany(f => new[] { f.A, f.B, f.C })
+                    .Where(v => v != vertexId)
+                    .Distinct()
+                    .ToArray();
+
+                foreach (var neighbor in neighbors)
+                {
+                    var candidate = TryLocalCollapse(current, localRows, localFaces, vertexId, neighbor);
+                    if (candidate.Count == 0) continue;
+
+                    var candidateIntersections = GeometryPredicates.FindIntersectingFacePairs(vertices, candidate).Count * 2;
+                    if (candidateIntersections < intersectionCount)
+                    {
+                        current = candidate;
+                        improved = true;
+                        break;
+                    }
+                }
+
+                if (improved)
+                {
+                    break;
+                }
+            }
+
+            if (!improved)
+            {
+                break;
+            }
+        }
+
+        return current;
+    }
+
+    private static List<Face> TryLocalCollapse(
+        List<Face> faces,
+        List<int> localRows,
+        List<Face> localFaces,
+        int vertexId,
+        int neighborId)
+    {
+        var localNew = localFaces
+            .Select(f => ReplaceVertex(f, vertexId, neighborId))
+            .Where(f => !IsDegenerate(f))
+            .ToList();
+
+        if (localNew.Count == 0)
+        {
+            return [];
+        }
+
+        var result = faces.ToList();
+
+        foreach (var idx in localRows.OrderByDescending(v => v))
+        {
+            result.RemoveAt(idx);
+        }
+
+        foreach (var f in localNew)
+        {
+            var duplicate = result.FindIndex(x => MeshTopology.Canonical(x) == MeshTopology.Canonical(f));
+            if (duplicate >= 0)
+            {
+                result.RemoveAt(duplicate);
+            }
+            else
+            {
+                result.Add(f);
+            }
         }
 
         return result;
@@ -54,15 +169,13 @@ internal static class MeshPreprocessing
     private static List<Face> RemoveDuplicateFacePairs(IReadOnlyList<Face> faces)
     {
         var buckets = faces
-            .Select((f, i) => (Face: f, Index: i, Key: MeshTopology.Canonical(f)))
-            .GroupBy(x => x.Key)
-            .ToDictionary(g => g.Key, g => g.Select(v => v.Face).ToList());
+            .GroupBy(MeshTopology.Canonical)
+            .ToDictionary(g => g.Key, g => g.ToList());
 
         var result = new List<Face>();
         foreach (var kv in buckets)
         {
-            var keep = kv.Value.Count % 2;
-            if (keep == 1)
+            if ((kv.Value.Count % 2) == 1)
             {
                 result.Add(kv.Value[0]);
             }
@@ -74,23 +187,11 @@ internal static class MeshPreprocessing
     private static List<Face> RemoveIntersectingFaces(IReadOnlyList<Vector3d> vertices, IReadOnlyList<Face> faces)
     {
         var remove = new bool[faces.Count];
-        for (var i = 0; i < faces.Count; i++)
+        var pairs = GeometryPredicates.FindIntersectingFacePairs(vertices, faces);
+        foreach (var p in pairs)
         {
-            for (var j = i + 1; j < faces.Count; j++)
-            {
-                var fi = faces[i];
-                var fj = faces[j];
-                if (MeshTopology.Canonical(fi) == MeshTopology.Canonical(fj)) continue;
-
-                if (GeometryPredicates.TriangleTriangleIntersection(
-                    vertices[fi.A], vertices[fi.B], vertices[fi.C],
-                    vertices[fj.A], vertices[fj.B], vertices[fj.C],
-                    ignoreCorners: true))
-                {
-                    remove[i] = true;
-                    remove[j] = true;
-                }
-            }
+            remove[p.I] = true;
+            remove[p.J] = true;
         }
 
         var result = new List<Face>();
@@ -101,4 +202,9 @@ internal static class MeshPreprocessing
 
         return result;
     }
+
+    private static Face ReplaceVertex(Face f, int from, int to)
+        => new(f.A == from ? to : f.A, f.B == from ? to : f.B, f.C == from ? to : f.C);
+
+    private static bool IsDegenerate(Face f) => f.A == f.B || f.B == f.C || f.A == f.C;
 }
