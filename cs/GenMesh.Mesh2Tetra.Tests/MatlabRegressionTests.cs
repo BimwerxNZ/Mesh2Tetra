@@ -27,7 +27,10 @@ public sealed class MatlabRegressionTests
             FailOnSelfIntersections = fixture.Options.CheckSelfIntersections,
             Verbose = fixture.Options.Verbose,
             PlaneDistanceTolerance = fixture.Options.PlaneDistanceTolerance,
+<<<<<<< codex/develop-full-regression-suite-for-matlab-fixtures
             Epsilon = fixture.Options.Epsilon,
+=======
+>>>>>>> main
         };
 
         var tets = Mesh2TetraConverter.Convert(vertices, faces, options);
