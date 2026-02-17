@@ -85,11 +85,24 @@ internal static class BoundaryCollapse3D
 
                 var b2 = boundary.ToList();
                 var t2 = tetrahedra.ToList();
-                Process(b2, t2, localRows.Select(x => x.idx).ToList(), localFaces, localNew, vertexId);
+                var addedTets = Process(b2, t2, localRows.Select(x => x.idx).ToList(), localFaces, localNew, vertexId);
 
                 if (HasVolumeError(vertices, b2, t2, originalVolume)) continue;
                 if (GeometryPredicates.HasOrientationImbalance(b2)) continue;
                 if (!GeometryPredicates.CheckMoveInside3D(vertices, localNew, vertexId)) continue;
+                if (GeometryPredicates.HasMeshIntersections(vertices, b2)) continue;
+
+                if (addedTets.Count > 0)
+                {
+                    var newTetFaces = addedTets
+                        .SelectMany(MeshTopology.GetTetFaces)
+                        .Concat(boundary)
+                        .ToList();
+                    if (GeometryPredicates.HasMeshIntersections(vertices, newTetFaces, maxOuterFaces: addedTets.Count * 4))
+                    {
+                        continue;
+                    }
+                }
 
                 boundary.Clear();
                 boundary.AddRange(b2);
@@ -102,13 +115,14 @@ internal static class BoundaryCollapse3D
         return false;
     }
 
-    private static void Process(List<Face> boundary, List<Tetrahedron> tetrahedra, List<int> localRows, List<Face> localFaces, List<Face> localNew, int vertexId)
+    private static List<Tetrahedron> Process(List<Face> boundary, List<Tetrahedron> tetrahedra, List<int> localRows, List<Face> localFaces, List<Face> localNew, int vertexId)
     {
         foreach (var idx in localRows.OrderByDescending(v => v))
         {
             boundary.RemoveAt(idx);
         }
 
+        var added = new List<Tetrahedron>(localNew.Count);
         foreach (var f in localNew)
         {
             var existingIdx = boundary.FindIndex(x => MeshTopology.Canonical(x) == MeshTopology.Canonical(f));
@@ -121,8 +135,12 @@ internal static class BoundaryCollapse3D
                 boundary.Add(f);
             }
 
-            tetrahedra.Add(new Tetrahedron(f.A, f.B, f.C, vertexId));
+            var tet = new Tetrahedron(f.A, f.B, f.C, vertexId);
+            tetrahedra.Add(tet);
+            added.Add(tet);
         }
+
+        return added;
     }
 
     private static void RetryRemoveTetrahedrons(List<Face> boundary, List<Tetrahedron> tetrahedra)

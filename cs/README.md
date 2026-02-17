@@ -32,5 +32,6 @@ The original Matlab implementation is a 2-phase constrained tetrahedralization p
   - local edge collapse,
   - boundary/tetra process update,
   - retry tetra removal fallback,
-  - volume consistency checks.
-- ⚠️ Triangle-triangle intersection parity checks from Matlab are not yet ported; this can still be added as a stricter validation step.
+  - volume consistency checks,
+  - triangle-triangle intersection parity checks during collapse validation.
+- ✅ Triangle-triangle intersection checks are ported and used in boundary collapse candidate filtering.
