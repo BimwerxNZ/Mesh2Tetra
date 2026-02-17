@@ -32,4 +32,5 @@ public sealed class FixtureOptions
     public bool CheckSelfIntersections { get; init; } = true;
     public bool Verbose { get; init; }
     public double PlaneDistanceTolerance { get; init; } = 1e-10;
+    public double Epsilon { get; init; } = 1e-8;
 }
