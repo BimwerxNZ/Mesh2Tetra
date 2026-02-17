@@ -30,6 +30,13 @@ public sealed class MatlabRegressionTests
             Epsilon = fixture.Options.Epsilon,
         };
 
+        if (!string.IsNullOrWhiteSpace(fixture.Expected.ExpectedExceptionContains))
+        {
+            var ex = Assert.ThrowsAny<Exception>(() => Mesh2TetraConverter.Convert(vertices, faces, options));
+            Assert.Contains(fixture.Expected.ExpectedExceptionContains, ex.Message, StringComparison.OrdinalIgnoreCase);
+            return;
+        }
+
         var tets = Mesh2TetraConverter.Convert(vertices, faces, options);
 
         Assert.Equal(fixture.Expected.TetraCount, tets.Count);

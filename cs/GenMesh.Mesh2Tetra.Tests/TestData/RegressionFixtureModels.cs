@@ -24,6 +24,8 @@ public sealed class FixtureExpected
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<int[]>? ExactTetrahedra { get; init; }
+
+    public string? ExpectedExceptionContains { get; init; }
 }
 
 public sealed class FixtureOptions

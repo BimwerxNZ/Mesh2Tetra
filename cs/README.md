@@ -57,4 +57,5 @@ Fixtures are discovered automatically from `GenMesh.Mesh2Tetra.Tests/Fixtures/*.
 - input vertices/faces,
 - expected tetra count,
 - expected total tetra volume (+ tolerance),
-- optional exact tetra index sets for deterministic small cases.
+- optional exact tetra index sets for deterministic small cases,
+- optional `expectedExceptionContains` for fail-fast fixtures (e.g. intentional self-intersection cases).
