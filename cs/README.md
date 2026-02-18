@@ -69,6 +69,12 @@ Quick fixture scaffold:
 python tools/new_fixture.py <fixture_name> --mode volume
 ```
 
+Quality gate (fixture lint + unit tests):
+
+```bash
+python tools/run_regression_gate.py
+```
+
 
 - input vertices/faces,
 - expected tetra count,
