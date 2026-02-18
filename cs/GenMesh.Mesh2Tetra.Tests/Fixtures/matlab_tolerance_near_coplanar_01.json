@@ -1,0 +1,30 @@
+{
+  "name": "matlab_tolerance_near_coplanar_01",
+  "input": {
+    "vertices": [
+      [0.0, 0.0, 0.0],
+      [1.0, 0.0, 0.0],
+      [0.0, 1.0, 0.0],
+      [0.001, 0.001, 0.0005]
+    ],
+    "faces": [
+      [0, 2, 1],
+      [0, 1, 3],
+      [1, 2, 3],
+      [0, 3, 2]
+    ]
+  },
+  "expected": {
+    "tetraCount": 1,
+    "tetraVolume": 8.333333333333333e-05,
+    "volumeTolerance": 1e-10
+  },
+  "options": {
+    "checkInput": true,
+    "autoResolveIntersections": true,
+    "failOnSelfIntersections": true,
+    "verbose": false,
+    "planeDistanceTolerance": 1e-12,
+    "epsilon": 1e-12
+  }
+}
