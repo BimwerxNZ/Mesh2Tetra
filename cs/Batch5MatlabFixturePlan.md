@@ -43,11 +43,25 @@ This plan focuses on importing additional **Matlab-exported** fixture data into 
    - Matlab-seeded random but reproducible fixture.
    - Expected: volume-only.
 
+## Progress tracking
+
+Use the status command to see queue completion at any time:
+
+```bash
+python cs/tools/batch5_status.py
+```
+
+Status legend:
+- `⏳ pending`: fixture not yet imported.
+- `✅ done`: fixture imported with expected assertion mode.
+- `⚠️ done`: fixture exists, but assertion mode differs from queue expectation.
+
 ## Export checklist per fixture
 
 1. Export vertices and triangular faces from Matlab.
 2. Record Matlab output tetrahedra and/or aggregate tetra volume.
-3. Scaffold JSON fixture: `python cs/tools/new_fixture.py <name> --mode volume` (or `deterministic` / `failfast`).
+3. Import Matlab export directly (preferred): `python cs/tools/import_matlab_fixture.py <matlab_export.json> --mode volume` (or `deterministic` / `count` / `failfast`).
+   - Fallback scaffold: `python cs/tools/new_fixture.py <name> --mode volume` and paste values manually.
 4. Replace scaffolded input/expected payload with Matlab-exported values.
 5. Choose assertion style:
    - deterministic: `tetraCount` + `exactTetrahedra` + `tetraVolume`
@@ -69,7 +83,9 @@ Use existing schema fields:
 - `expected.exactTetrahedra` (optional)
 - `expected.expectedExceptionContains` (optional)
 - `options.checkInput`
-- `options.checkSelfIntersections`
+- `options.checkSelfIntersections` (legacy shorthand; maps to both flags below)
+- `options.autoResolveIntersections` (optional explicit control)
+- `options.failOnSelfIntersections` (optional explicit control)
 - `options.verbose`
 - `options.planeDistanceTolerance`
 - `options.epsilon`
