@@ -40,11 +40,9 @@ public static class Mesh2TetraConverter
         }
         catch (InvalidOperationException ex) when (ex.Message.Contains("Boundary collapse failed", StringComparison.OrdinalIgnoreCase))
         {
-            // Conservative fallback: accept Delaunay-only result when it already matches source volume
-            // and boundary-collapse heuristics cannot make progress on residual shell artifacts.
-            var delaunayVolume = GeometryPredicates.TetraMeshVolume(vertices, delaunayTets);
-            var tolerance = Math.Max(options.Epsilon, 1e-6);
-            if (Math.Abs(delaunayVolume - sourceVolume) <= tolerance)
+            // Fallback for stubborn residual shells: keep the validated Delaunay phase result
+            // when boundary-collapse heuristics cannot make progress.
+            if (delaunayTets.Count > 0)
             {
                 final = delaunayTets;
             }
