@@ -43,10 +43,10 @@ The original Matlab implementation is a 2-phase constrained tetrahedralization p
 - ✅ `solveInterSections` parity path is implemented via iterative local edge-collapse style intersection reduction with conservative fallback cleanup.
 - ✅ Regression harness for Matlab fixture parity now exists in `GenMesh.Mesh2Tetra.Tests` with JSON-driven fixtures and strict tetra/volume assertions.
 - ✅ Batch 3 fixture expansion added irregular closed-shell JSON fixtures with volume-only assertions where tetra ordering can vary.
-<<<<<<< codex/convert-matlab-batch-3-to-c#-tkpppi
 - ✅ Batch 4 fixture expansion added deterministic scale/translation multi-component cases.
-=======
->>>>>>> main
+- ⚠️ Continue adding Matlab-exported fixtures as they are generated to broaden regression breadth.
+- ✅ Batch 5 Matlab fixture intake plan documented in `Batch5MatlabFixturePlan.md`.
+- ✅ Batch 4 fixture expansion added deterministic scale/translation multi-component cases.
 - ⚠️ Continue adding Matlab-exported fixtures as they are generated to broaden regression breadth.
 
 ## Regression fixtures (Matlab parity)
