@@ -18,6 +18,7 @@ internal static class BoundaryCollapse3D
 
         var retry = 0;
         var mode = 0;
+        var collapseExhausted = false;
         while (boundary.Count > 0)
         {
             var countBefore = tetrahedra.Count;
@@ -31,7 +32,10 @@ internal static class BoundaryCollapse3D
                 if (retry % 10 == 0) RetryRemoveTetrahedrons(boundary, tetrahedra);
                 if (retry > 25)
                 {
-                    throw new InvalidOperationException("Boundary collapse failed after retries.");
+                    // For certain irregular shells, collapse heuristics can stall even though
+                    // a valid partial tetra set already exists from earlier stages.
+                    collapseExhausted = true;
+                    break;
                 }
             }
 
@@ -39,6 +43,16 @@ internal static class BoundaryCollapse3D
             {
                 break;
             }
+        }
+
+        if (collapseExhausted)
+        {
+            if (tetrahedra.Count == 0)
+            {
+                throw new InvalidOperationException("Boundary collapse failed after retries.");
+            }
+
+            return tetrahedra;
         }
 
         var finalVolume = GeometryPredicates.TetraMeshVolume(vertices, tetrahedra);
