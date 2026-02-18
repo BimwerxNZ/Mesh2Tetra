@@ -1,0 +1,39 @@
+{
+  "name": "matlab_intersections_fail_fast_01",
+  "input": {
+    "vertices": [
+      [0.0, 0.0, 0.0],
+      [1.0, 0.0, 0.0],
+      [0.0, 1.0, 0.0],
+      [0.0, 0.0, 1.0],
+      [0.2, 0.2, 0.2],
+      [1.2, 0.2, 0.2],
+      [0.2, 1.2, 0.2],
+      [0.2, 0.2, 1.2]
+    ],
+    "faces": [
+      [0, 2, 1],
+      [0, 1, 3],
+      [1, 2, 3],
+      [0, 3, 2],
+      [4, 6, 5],
+      [4, 5, 7],
+      [5, 6, 7],
+      [4, 7, 6]
+    ]
+  },
+  "expected": {
+    "tetraCount": 0,
+    "tetraVolume": 0.0,
+    "volumeTolerance": 1e-10,
+    "expectedExceptionContains": "self-intersections"
+  },
+  "options": {
+    "checkInput": true,
+    "autoResolveIntersections": false,
+    "failOnSelfIntersections": true,
+    "verbose": false,
+    "planeDistanceTolerance": 1e-10,
+    "epsilon": 1e-08
+  }
+}

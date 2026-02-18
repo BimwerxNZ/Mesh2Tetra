@@ -31,8 +31,16 @@ public sealed class FixtureExpected
 public sealed class FixtureOptions
 {
     public bool CheckInput { get; init; } = true;
-    public bool CheckSelfIntersections { get; init; } = true;
+    public bool? CheckSelfIntersections { get; init; }
+    public bool? AutoResolveIntersections { get; init; }
+    public bool? FailOnSelfIntersections { get; init; }
     public bool Verbose { get; init; }
     public double PlaneDistanceTolerance { get; init; } = 1e-10;
     public double Epsilon { get; init; } = 1e-8;
+
+    public bool ResolveAutoResolveIntersections()
+        => AutoResolveIntersections ?? CheckSelfIntersections ?? true;
+
+    public bool ResolveFailOnSelfIntersections()
+        => FailOnSelfIntersections ?? CheckSelfIntersections ?? true;
 }
