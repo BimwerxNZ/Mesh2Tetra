@@ -33,7 +33,27 @@ public static class Mesh2TetraConverter
             Console.WriteLine($"[Mesh2Tetra] Residual faces: {remainingFaces.Count}");
         }
 
-        var final = BoundaryCollapse3D.FillResidualVolume(vertices, remainingFaces, delaunayTets, options);
+        IReadOnlyList<Tetrahedron> final;
+        try
+        {
+            final = BoundaryCollapse3D.FillResidualVolume(vertices, remainingFaces, delaunayTets, options);
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains("Boundary collapse failed", StringComparison.OrdinalIgnoreCase))
+        {
+            // Conservative fallback: accept Delaunay-only result when it already matches source volume
+            // and boundary-collapse heuristics cannot make progress on residual shell artifacts.
+            var delaunayVolume = GeometryPredicates.TetraMeshVolume(vertices, delaunayTets);
+            var tolerance = Math.Max(options.Epsilon, 1e-6);
+            if (Math.Abs(delaunayVolume - sourceVolume) <= tolerance)
+            {
+                final = delaunayTets;
+            }
+            else
+            {
+                throw;
+            }
+        }
+
         if (options.Verbose)
         {
             Console.WriteLine($"[Mesh2Tetra] Final tets: {final.Count}");
