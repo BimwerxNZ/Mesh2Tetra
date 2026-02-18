@@ -75,6 +75,12 @@ Quality gate (fixture lint + unit tests):
 python tools/run_regression_gate.py
 ```
 
+Fixture catalog generation:
+
+```bash
+python tools/generate_fixture_catalog.py
+```
+
 
 - input vertices/faces,
 - expected tetra count,
@@ -86,3 +92,8 @@ python tools/run_regression_gate.py
 ## Matlab function coverage index
 
 A full function-by-function mapping now lives in `MatlabFunctionCoverage.md`.
+
+
+## Fixture catalog
+
+A generated fixture summary is available in `FixtureCatalog.md`.
