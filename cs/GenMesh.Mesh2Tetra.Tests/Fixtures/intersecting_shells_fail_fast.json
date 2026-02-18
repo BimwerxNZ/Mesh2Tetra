@@ -1,5 +1,5 @@
 {
-  "name": "intersecting_shells_autoresolve",
+  "name": "intersecting_shells_autoresolve_single_component",
   "input": {
     "vertices": [
       [
@@ -87,8 +87,8 @@
     ]
   },
   "expected": {
-    "tetraCount": 2,
-    "tetraVolume": 0.3333333333333333,
+    "tetraCount": 1,
+    "tetraVolume": 0.16666666666666666,
     "volumeTolerance": 1e-10
   },
   "options": {
