@@ -47,11 +47,12 @@ This plan focuses on importing additional **Matlab-exported** fixture data into 
 
 1. Export vertices and triangular faces from Matlab.
 2. Record Matlab output tetrahedra and/or aggregate tetra volume.
-3. Encode JSON fixture at `cs/GenMesh.Mesh2Tetra.Tests/Fixtures/<name>.json`.
-4. Choose assertion style:
+3. Scaffold JSON fixture: `python cs/tools/new_fixture.py <name> --mode volume` (or `deterministic` / `failfast`).
+4. Replace scaffolded input/expected payload with Matlab-exported values.
+5. Choose assertion style:
    - deterministic: `tetraCount` + `exactTetrahedra` + `tetraVolume`
    - non-deterministic: `tetraVolume` (and optional `tetraCount`)
-5. Run local validation:
+6. Run local validation:
    - `python -m json.tool <fixture>.json`
    - `dotnet test cs/GenMesh.Mesh2Tetra.sln` (when .NET SDK available)
 

@@ -63,6 +63,12 @@ Quick fixture lint:
 python tools/validate_fixtures.py
 ```
 
+Quick fixture scaffold:
+
+```bash
+python tools/new_fixture.py <fixture_name> --mode volume
+```
+
 
 - input vertices/faces,
 - expected tetra count,
