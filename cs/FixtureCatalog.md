@@ -1,0 +1,26 @@
+# Fixture Catalog
+
+Auto-generated summary of regression fixtures.
+
+| Fixture | File | Vertices | Faces | Assertion mode |
+|---|---|---:|---:|---|
+| `intersecting_overlapping_tetra_pair` | `intersecting_overlapping_tetra_pair.json` | 8 | 8 | count+volume |
+| `intersecting_shells_autoresolve_single_component` | `intersecting_shells_fail_fast.json` | 8 | 8 | count+volume |
+| `irregular_closed_shell_prism_like` | `irregular_closed_shell_prism_like.json` | 6 | 8 | volume-only |
+| `irregular_closed_shell_skewed_hexahedron` | `irregular_closed_shell_skewed_hexahedron.json` | 8 | 12 | volume-only |
+| `multi_component_four_tetra` | `multi_component_four_tetra.json` | 16 | 16 | deterministic |
+| `multi_component_mixed_scale_three_tetra` | `multi_component_mixed_scale_three_tetra.json` | 12 | 12 | deterministic |
+| `multi_component_three_tetra` | `multi_component_three_tetra.json` | 12 | 12 | deterministic |
+| `multi_component_two_tetra` | `multi_component_two_tetra.json` | 8 | 8 | deterministic |
+| `scaled_unit_tetra` | `scaled_unit_tetra.json` | 4 | 4 | deterministic |
+| `unit_tetra` | `tetra_unit.json` | 4 | 4 | deterministic |
+| `tolerance_small_tetra_accepted` | `tolerance_small_tetra_accepted.json` | 4 | 4 | deterministic |
+| `tolerance_small_tetra_with_default_epsilon` | `tolerance_small_tetra_rejected.json` | 4 | 4 | count+volume |
+
+Total fixtures: **12**.
+
+Regenerate with:
+
+```bash
+python tools/generate_fixture_catalog.py
+```

@@ -168,7 +168,7 @@ internal static class GeometryPredicates
             || LineTriangleIntersection(o1, o2, o3, p3, p1, ignoreCorners);
     }
 
-    private static bool LineTriangleIntersection(Vector3d a, Vector3d b, Vector3d c, Vector3d p1, Vector3d p2, bool ignoreCorners)
+    public static bool LineTriangleIntersection(Vector3d a, Vector3d b, Vector3d c, Vector3d p1, Vector3d p2, bool ignoreCorners)
     {
         if (SeparatedByAabb(a, b, c, p1, p2, p2))
         {
@@ -303,7 +303,7 @@ internal static class GeometryPredicates
         return new Vector2d(values[i], values[j]);
     }
 
-    private static Vector3d PointToClosestPointOnPlane(Vector3d a, Vector3d b, Vector3d c, Vector3d p)
+    public static Vector3d PointToClosestPointOnPlane(Vector3d a, Vector3d b, Vector3d c, Vector3d p)
     {
         var n = Vector3d.Cross(b - a, c - a);
         var nNorm = n.Norm();
@@ -312,6 +312,154 @@ internal static class GeometryPredicates
         var distance = Vector3d.Dot(p - a, n);
         return p - new Vector3d(n.X * distance, n.Y * distance, n.Z * distance);
     }
+
+    public static Vector3d PointToClosestPointOnLine(Vector3d lineStart, Vector3d lineEnd, Vector3d point)
+    {
+        var segment = lineEnd - lineStart;
+        var denom = Vector3d.Dot(segment, segment);
+        if (denom <= 1e-16)
+        {
+            return lineStart;
+        }
+
+        var t = Vector3d.Dot(point - lineStart, segment) / denom;
+        t = Math.Clamp(t, 0d, 1d);
+        return lineStart + (segment * t);
+    }
+
+    public static (double L1, double L2, double L3, double L4) BarycentricCoordinatesTetrahedron(
+        Vector3d p,
+        Vector3d a,
+        Vector3d b,
+        Vector3d c,
+        Vector3d d)
+    {
+        var den = SignedTetraVolume(a, b, c, d);
+        if (Math.Abs(den) <= 1e-16)
+        {
+            return (double.NaN, double.NaN, double.NaN, double.NaN);
+        }
+
+        var l1 = SignedTetraVolume(p, b, c, d) / den;
+        var l2 = SignedTetraVolume(a, p, c, d) / den;
+        var l3 = SignedTetraVolume(a, b, p, d) / den;
+        var l4 = SignedTetraVolume(a, b, c, p) / den;
+        return (l1, l2, l3, l4);
+    }
+
+    public static bool CheckInsideTetrahedron(Vector3d p, Vector3d a, Vector3d b, Vector3d c, Vector3d d, double eps = 1e-8)
+    {
+        var lambda = BarycentricCoordinatesTetrahedron(p, a, b, c, d);
+        if (double.IsNaN(lambda.L1))
+        {
+            return false;
+        }
+
+        return lambda.L1 >= -eps && lambda.L2 >= -eps && lambda.L3 >= -eps && lambda.L4 >= -eps
+            && lambda.L1 <= (1d + eps) && lambda.L2 <= (1d + eps) && lambda.L3 <= (1d + eps) && lambda.L4 <= (1d + eps);
+    }
+
+    public static bool[] CheckPointsInsideTetrahedron(
+        IReadOnlyList<Vector3d> points,
+        Vector3d a,
+        Vector3d b,
+        Vector3d c,
+        Vector3d d,
+        double eps = 1e-8)
+        => points.Select(p => CheckInsideTetrahedron(p, a, b, c, d, eps)).ToArray();
+
+    public static bool TryLineLineIntersect(
+        Vector3d p1,
+        Vector3d p2,
+        Vector3d q1,
+        Vector3d q2,
+        out Vector3d point,
+        double eps = 1e-10)
+    {
+        var u = p2 - p1;
+        var v = q2 - q1;
+        var w0 = p1 - q1;
+
+        var a = Vector3d.Dot(u, u);
+        var b = Vector3d.Dot(u, v);
+        var c = Vector3d.Dot(v, v);
+        var d = Vector3d.Dot(u, w0);
+        var e = Vector3d.Dot(v, w0);
+        var denom = (a * c) - (b * b);
+
+        if (Math.Abs(denom) <= eps)
+        {
+            point = default;
+            return false;
+        }
+
+        var s = ((b * e) - (c * d)) / denom;
+        var t = ((a * e) - (b * d)) / denom;
+        if (s < -eps || s > 1d + eps || t < -eps || t > 1d + eps)
+        {
+            point = default;
+            return false;
+        }
+
+        var cp1 = p1 + (u * s);
+        var cp2 = q1 + (v * t);
+        if ((cp1 - cp2).Norm() > 1e-7)
+        {
+            point = default;
+            return false;
+        }
+
+        point = (cp1 + cp2) / 2d;
+        return true;
+    }
+
+    public static bool TrySphereFrom4Points(
+        Vector3d p1,
+        Vector3d p2,
+        Vector3d p3,
+        Vector3d p4,
+        out Vector3d center,
+        out double radius)
+    {
+        var a = p2 - p1;
+        var b = p3 - p1;
+        var c = p4 - p1;
+
+        var rhs = new Vector3d(
+            (Vector3d.Dot(p2, p2) - Vector3d.Dot(p1, p1)) / 2d,
+            (Vector3d.Dot(p3, p3) - Vector3d.Dot(p1, p1)) / 2d,
+            (Vector3d.Dot(p4, p4) - Vector3d.Dot(p1, p1)) / 2d);
+
+        var det = Determinant3x3(a.X, a.Y, a.Z, b.X, b.Y, b.Z, c.X, c.Y, c.Z);
+        if (Math.Abs(det) <= 1e-14)
+        {
+            center = default;
+            radius = 0d;
+            return false;
+        }
+
+        var dx = Determinant3x3(rhs.X, a.Y, a.Z, rhs.Y, b.Y, b.Z, rhs.Z, c.Y, c.Z);
+        var dy = Determinant3x3(a.X, rhs.X, a.Z, b.X, rhs.Y, b.Z, c.X, rhs.Z, c.Z);
+        var dz = Determinant3x3(a.X, a.Y, rhs.X, b.X, b.Y, rhs.Y, c.X, c.Y, rhs.Z);
+
+        center = new Vector3d(dx / det, dy / det, dz / det);
+        radius = (center - p1).Norm();
+        return true;
+    }
+
+    private static double Determinant3x3(
+        double a11,
+        double a12,
+        double a13,
+        double a21,
+        double a22,
+        double a23,
+        double a31,
+        double a32,
+        double a33)
+        => (a11 * ((a22 * a33) - (a23 * a32)))
+         - (a12 * ((a21 * a33) - (a23 * a31)))
+         + (a13 * ((a21 * a32) - (a22 * a31)));
 
     public static bool PointInsideClosedMesh(Vector3d p, IReadOnlyList<Vector3d> vertices, IReadOnlyList<Face> faces)
     {
