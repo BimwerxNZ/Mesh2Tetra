@@ -60,7 +60,8 @@ Status legend:
 
 1. Export vertices and triangular faces from Matlab.
 2. Record Matlab output tetrahedra and/or aggregate tetra volume.
-3. Scaffold JSON fixture: `python cs/tools/new_fixture.py <name> --mode volume` (or `deterministic` / `failfast`).
+3. Import Matlab export directly (preferred): `python cs/tools/import_matlab_fixture.py <matlab_export.json> --mode volume` (or `deterministic` / `count` / `failfast`).
+   - Fallback scaffold: `python cs/tools/new_fixture.py <name> --mode volume` and paste values manually.
 4. Replace scaffolded input/expected payload with Matlab-exported values.
 5. Choose assertion style:
    - deterministic: `tetraCount` + `exactTetrahedra` + `tetraVolume`

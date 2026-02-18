@@ -69,6 +69,12 @@ Quick fixture scaffold:
 python tools/new_fixture.py <fixture_name> --mode volume
 ```
 
+Import Matlab-exported fixture payload:
+
+```bash
+python tools/import_matlab_fixture.py <matlab_export.json> --mode volume
+```
+
 Batch 5 queue progress snapshot:
 
 ```bash
