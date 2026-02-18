@@ -46,6 +46,7 @@ The original Matlab implementation is a 2-phase constrained tetrahedralization p
 - ✅ Batch 4 fixture expansion added deterministic scale/translation multi-component cases.
 - ⚠️ Continue adding Matlab-exported fixtures as they are generated to broaden regression breadth.
 - ✅ Batch 5 Matlab fixture intake plan documented in `Batch5MatlabFixturePlan.md`.
+- ✅ Batch 6 Matlab fixture intake plan documented in `Batch6MatlabFixturePlan.md`.
 
 ## Regression fixtures (Matlab parity)
 
@@ -79,6 +80,12 @@ Batch 5 queue progress snapshot:
 
 ```bash
 python tools/batch5_status.py
+```
+
+Batch 6 queue progress snapshot:
+
+```bash
+python tools/batch6_status.py
 ```
 
 Quality gate (fixture lint + catalog freshness + unit tests):
