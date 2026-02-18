@@ -1,0 +1,46 @@
+name: cs-regression-gate
+
+on:
+  pull_request:
+    paths:
+      - 'cs/**'
+      - '.github/workflows/cs-regression-gate.yml'
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'cs/**'
+      - '.github/workflows/cs-regression-gate.yml'
+
+jobs:
+  regression-gate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cs
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Fixture lint
+        run: python tools/validate_fixtures.py
+
+      - name: Fixture catalog freshness
+        run: |
+          python tools/generate_fixture_catalog.py
+          git diff --exit-code -- FixtureCatalog.md
+
+      - name: Run tests
+        run: dotnet test GenMesh.Mesh2Tetra.sln --configuration Release
