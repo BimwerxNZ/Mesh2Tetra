@@ -39,7 +39,10 @@ public sealed class MatlabRegressionTests
 
         var tets = Mesh2TetraConverter.Convert(vertices, faces, options);
 
-        Assert.Equal(fixture.Expected.TetraCount, tets.Count);
+        if (fixture.Expected.TetraCount.HasValue)
+        {
+            Assert.Equal(fixture.Expected.TetraCount.Value, tets.Count);
+        }
 
         var outputVolume = tets.Sum(t => Math.Abs(SignedVolume(vertices[t.A], vertices[t.B], vertices[t.C], vertices[t.D])));
         Assert.InRange(
