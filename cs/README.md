@@ -69,11 +69,15 @@ Quick fixture scaffold:
 python tools/new_fixture.py <fixture_name> --mode volume
 ```
 
-Quality gate (fixture lint + unit tests):
+Quality gate (fixture lint + catalog freshness + unit tests):
 
 ```bash
 python tools/run_regression_gate.py
 ```
+
+Optional flags:
+- `--skip-dotnet`
+- `--skip-catalog`
 
 Fixture catalog generation:
 
