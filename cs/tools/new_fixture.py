@@ -41,7 +41,8 @@ def base_fixture(name: str) -> dict:
         },
         "options": {
             "checkInput": True,
-            "checkSelfIntersections": True,
+            "autoResolveIntersections": True,
+            "failOnSelfIntersections": True,
             "verbose": False,
             "planeDistanceTolerance": 1e-10,
             "epsilon": 1e-8,
@@ -63,6 +64,8 @@ def apply_mode(fixture: dict, mode: str) -> None:
         expected["tetraCount"] = 0
         expected["tetraVolume"] = 0.0
         expected["expectedExceptionContains"] = "self-intersections"
+        fixture["options"]["autoResolveIntersections"] = False
+        fixture["options"]["failOnSelfIntersections"] = True
     else:
         raise ValueError(f"Unsupported mode: {mode}")
 

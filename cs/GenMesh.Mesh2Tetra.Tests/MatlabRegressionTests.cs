@@ -23,8 +23,8 @@ public sealed class MatlabRegressionTests
         var options = new Mesh2TetraOptions
         {
             CheckInput = fixture.Options.CheckInput,
-            AutoResolveIntersections = fixture.Options.CheckSelfIntersections,
-            FailOnSelfIntersections = fixture.Options.CheckSelfIntersections,
+            AutoResolveIntersections = fixture.Options.ResolveAutoResolveIntersections(),
+            FailOnSelfIntersections = fixture.Options.ResolveFailOnSelfIntersections(),
             Verbose = fixture.Options.Verbose,
             PlaneDistanceTolerance = fixture.Options.PlaneDistanceTolerance,
             Epsilon = fixture.Options.Epsilon,

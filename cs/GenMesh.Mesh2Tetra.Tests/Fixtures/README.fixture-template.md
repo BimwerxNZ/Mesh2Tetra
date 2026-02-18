@@ -23,7 +23,8 @@ Copy this template when adding a new Matlab-exported fixture:
   },
   "options": {
     "checkInput": true,
-    "checkSelfIntersections": true,
+    "autoResolveIntersections": true,
+    "failOnSelfIntersections": true,
     "verbose": false,
     "planeDistanceTolerance": 1e-10,
     "epsilon": 1e-8
@@ -32,3 +33,5 @@ Copy this template when adding a new Matlab-exported fixture:
 ```
 
 For non-deterministic triangulation outcomes, omit `tetraCount` and `exactTetrahedra` and keep only volume assertions.
+
+`checkSelfIntersections` is still accepted as a legacy shorthand and maps to both intersection flags when explicit values are omitted.
