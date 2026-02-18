@@ -41,4 +41,21 @@ The original Matlab implementation is a 2-phase constrained tetrahedralization p
 ## Remaining work
 
 - ✅ `solveInterSections` parity path is implemented via iterative local edge-collapse style intersection reduction with conservative fallback cleanup.
-- ⚠️ Full regression suite against Matlab fixtures is still needed for parity confidence.
+- ✅ Regression harness for Matlab fixture parity now exists in `GenMesh.Mesh2Tetra.Tests` with JSON-driven fixtures and strict tetra/volume assertions.
+- ⚠️ Expand the fixture catalog with additional Matlab-exported cases (complex intersecting shells, multi-component solids, and tolerance edge cases).
+
+## Regression fixtures (Matlab parity)
+
+Run from `cs/`:
+
+```bash
+dotnet test GenMesh.Mesh2Tetra.sln
+```
+
+Fixtures are discovered automatically from `GenMesh.Mesh2Tetra.Tests/Fixtures/*.json`. Each fixture can assert:
+
+- input vertices/faces,
+- expected tetra count,
+- expected total tetra volume (+ tolerance),
+- optional exact tetra index sets for deterministic small cases,
+- optional `expectedExceptionContains` for fail-fast fixtures (e.g. intentional self-intersection cases).

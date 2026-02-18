@@ -81,9 +81,18 @@ internal static class DelaunayInside3D
         Mesh2TetraOptions options)
     {
         var dverts = localVertices.Select((v, i) => new DVertex(i, v)).ToList();
-        var triangulation = DelaunayTriangulation<DVertex, DefaultTriangulationCell<DVertex>>.Create(
-            dverts,
-            options.PlaneDistanceTolerance);
+
+        DelaunayTriangulation<DVertex, DefaultTriangulationCell<DVertex>> triangulation;
+        try
+        {
+            triangulation = DelaunayTriangulation<DVertex, DefaultTriangulationCell<DVertex>>.Create(
+                dverts,
+                options.PlaneDistanceTolerance);
+        }
+        catch (ConvexHullGenerationException)
+        {
+            return TrySingleTetraFallback(localVertices, localFaces, options);
+        }
 
         var result = new List<Tetrahedron>();
         foreach (var cell in triangulation.Cells)
@@ -108,6 +117,38 @@ internal static class DelaunayInside3D
         }
 
         return result;
+    }
+
+
+    private static List<Tetrahedron> TrySingleTetraFallback(
+        IReadOnlyList<Vector3d> localVertices,
+        IReadOnlyList<Face> localFaces,
+        Mesh2TetraOptions options)
+    {
+        if (localVertices.Count != 4 || localFaces.Count != 4)
+        {
+            return [];
+        }
+
+        var tet = new Tetrahedron(0, 1, 2, 3);
+        var volume = Math.Abs(GeometryPredicates.SignedTetraVolume(
+            localVertices[tet.A],
+            localVertices[tet.B],
+            localVertices[tet.C],
+            localVertices[tet.D]));
+
+        if (volume <= options.Epsilon)
+        {
+            return [];
+        }
+
+        var centroid = (localVertices[tet.A] + localVertices[tet.B] + localVertices[tet.C] + localVertices[tet.D]) / 4d;
+        if (!GeometryPredicates.PointInsideClosedMesh(centroid, localVertices, localFaces))
+        {
+            return [];
+        }
+
+        return [tet];
     }
 
     private sealed class DVertex(int id, Vector3d p) : IVertex
