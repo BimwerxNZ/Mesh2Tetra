@@ -46,8 +46,6 @@ The original Matlab implementation is a 2-phase constrained tetrahedralization p
 - ✅ Batch 4 fixture expansion added deterministic scale/translation multi-component cases.
 - ⚠️ Continue adding Matlab-exported fixtures as they are generated to broaden regression breadth.
 - ✅ Batch 5 Matlab fixture intake plan documented in `Batch5MatlabFixturePlan.md`.
-- ✅ Batch 4 fixture expansion added deterministic scale/translation multi-component cases.
-- ⚠️ Continue adding Matlab-exported fixtures as they are generated to broaden regression breadth.
 
 ## Regression fixtures (Matlab parity)
 
@@ -58,6 +56,13 @@ dotnet test GenMesh.Mesh2Tetra.sln
 ```
 
 Fixtures are discovered automatically from `GenMesh.Mesh2Tetra.Tests/Fixtures/*.json`. Each fixture can assert:
+
+Quick fixture lint:
+
+```bash
+python tools/validate_fixtures.py
+```
+
 
 - input vertices/faces,
 - expected tetra count,
