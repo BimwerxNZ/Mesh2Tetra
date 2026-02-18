@@ -13,6 +13,7 @@ Auto-generated summary of regression fixtures.
 | `matlab_intersections_fail_fast_01` | `matlab_intersections_fail_fast_01.json` | 8 | 8 | fail-fast |
 | `matlab_irregular_closed_shell_dense_01` | `matlab_irregular_closed_shell_dense_01.json` | 8 | 12 | volume-only |
 | `matlab_irregular_closed_shell_dense_02` | `matlab_irregular_closed_shell_dense_02.json` | 8 | 12 | volume-only |
+| `matlab_tolerance_near_coplanar_01` | `matlab_tolerance_near_coplanar_01.json` | 4 | 4 | count+volume |
 | `multi_component_four_tetra` | `multi_component_four_tetra.json` | 16 | 16 | deterministic |
 | `multi_component_mixed_scale_three_tetra` | `multi_component_mixed_scale_three_tetra.json` | 12 | 12 | deterministic |
 | `multi_component_three_tetra` | `multi_component_three_tetra.json` | 12 | 12 | deterministic |
@@ -22,7 +23,7 @@ Auto-generated summary of regression fixtures.
 | `tolerance_small_tetra_accepted` | `tolerance_small_tetra_accepted.json` | 4 | 4 | deterministic |
 | `tolerance_small_tetra_with_default_epsilon` | `tolerance_small_tetra_rejected.json` | 4 | 4 | count+volume |
 
-Total fixtures: **17**.
+Total fixtures: **18**.
 
 Regenerate with:
 
