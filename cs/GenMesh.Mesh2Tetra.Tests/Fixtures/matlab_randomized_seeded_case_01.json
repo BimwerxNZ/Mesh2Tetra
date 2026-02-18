@@ -1,0 +1,32 @@
+{
+  "name": "matlab_randomized_seeded_case_01",
+  "input": {
+    "vertices": [
+      [0.173, 0.592, 0.241],
+      [1.284, 0.337, 0.418],
+      [0.456, 1.146, 0.527],
+      [0.619, 0.443, 1.302],
+
+      [2.731, 0.284, 0.916],
+      [3.408, 0.913, 1.144],
+      [2.964, 1.562, 0.433],
+      [3.177, 0.641, 1.887]
+    ],
+    "faces": [
+      [0, 2, 1], [0, 1, 3], [1, 2, 3], [0, 3, 2],
+      [4, 6, 5], [4, 5, 7], [5, 6, 7], [4, 7, 6]
+    ]
+  },
+  "expected": {
+    "tetraVolume": 0.21021336566666665,
+    "volumeTolerance": 1e-10
+  },
+  "options": {
+    "checkInput": true,
+    "autoResolveIntersections": true,
+    "failOnSelfIntersections": true,
+    "verbose": false,
+    "planeDistanceTolerance": 1e-10,
+    "epsilon": 1e-8
+  }
+}
