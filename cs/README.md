@@ -101,3 +101,8 @@ A full function-by-function mapping now lives in `MatlabFunctionCoverage.md`.
 ## Fixture catalog
 
 A generated fixture summary is available in `FixtureCatalog.md`.
+
+
+## CI
+
+GitHub Actions workflow `cs-regression-gate` runs fixture lint, fixture catalog freshness, and `dotnet test` for `cs/**` changes.
