@@ -16,7 +16,7 @@ FIXTURES = ROOT / "GenMesh.Mesh2Tetra.Tests" / "Fixtures"
 REQUIRED_TOP = {"name", "input", "expected", "options"}
 REQUIRED_INPUT = {"vertices", "faces"}
 REQUIRED_EXPECTED = {"tetraVolume", "volumeTolerance"}
-REQUIRED_OPTIONS = {"checkInput", "checkSelfIntersections", "planeDistanceTolerance", "epsilon"}
+REQUIRED_OPTIONS = {"checkInput", "planeDistanceTolerance", "epsilon"}
 
 
 def fail(path: Path, message: str) -> None:
@@ -90,9 +90,22 @@ def validate_fixture(path: Path) -> None:
     if missing:
         fail(path, f"options missing keys: {sorted(missing)}")
 
-    for key in ("checkInput", "checkSelfIntersections"):
-        if not isinstance(options[key], bool):
-            fail(path, f"options.{key} must be boolean")
+    if not isinstance(options["checkInput"], bool):
+        fail(path, "options.checkInput must be boolean")
+
+    legacy = options.get("checkSelfIntersections")
+    auto_resolve = options.get("autoResolveIntersections")
+    fail_on = options.get("failOnSelfIntersections")
+
+    if legacy is not None and not isinstance(legacy, bool):
+        fail(path, "options.checkSelfIntersections must be boolean when present")
+    if auto_resolve is not None and not isinstance(auto_resolve, bool):
+        fail(path, "options.autoResolveIntersections must be boolean when present")
+    if fail_on is not None and not isinstance(fail_on, bool):
+        fail(path, "options.failOnSelfIntersections must be boolean when present")
+
+    if legacy is None and auto_resolve is None and fail_on is None:
+        fail(path, "options must include checkSelfIntersections or explicit autoResolveIntersections/failOnSelfIntersections flags")
 
     for key in ("planeDistanceTolerance", "epsilon"):
         if not isinstance(options[key], (int, float)) or options[key] < 0:

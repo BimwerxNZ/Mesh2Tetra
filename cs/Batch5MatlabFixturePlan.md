@@ -69,7 +69,9 @@ Use existing schema fields:
 - `expected.exactTetrahedra` (optional)
 - `expected.expectedExceptionContains` (optional)
 - `options.checkInput`
-- `options.checkSelfIntersections`
+- `options.checkSelfIntersections` (legacy shorthand; maps to both flags below)
+- `options.autoResolveIntersections` (optional explicit control)
+- `options.failOnSelfIntersections` (optional explicit control)
 - `options.verbose`
 - `options.planeDistanceTolerance`
 - `options.epsilon`
