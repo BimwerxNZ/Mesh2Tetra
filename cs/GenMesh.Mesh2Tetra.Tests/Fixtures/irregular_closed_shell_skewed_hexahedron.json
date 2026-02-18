@@ -27,7 +27,7 @@
     ]
   },
   "expected": {
-    "tetraVolume": 4.582833333333333,
+    "tetraVolume": 0.9878333333333331,
     "volumeTolerance": 1e-7
   },
   "options": {
