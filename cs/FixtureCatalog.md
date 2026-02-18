@@ -9,6 +9,7 @@ Auto-generated summary of regression fixtures.
 | `intersecting_shells_fail_fast_explicit` | `intersecting_shells_fail_fast_explicit.json` | 8 | 8 | fail-fast |
 | `irregular_closed_shell_prism_like` | `irregular_closed_shell_prism_like.json` | 6 | 8 | volume-only |
 | `irregular_closed_shell_skewed_hexahedron` | `irregular_closed_shell_skewed_hexahedron.json` | 8 | 12 | volume-only |
+| `matlab_duplicate_faces_cleanup_01` | `matlab_duplicate_faces_cleanup_01.json` | 4 | 6 | volume-only |
 | `matlab_intersections_autoresolve_cluster_01` | `matlab_intersections_autoresolve_cluster_01.json` | 8 | 8 | volume-only |
 | `matlab_intersections_fail_fast_01` | `matlab_intersections_fail_fast_01.json` | 8 | 8 | fail-fast |
 | `matlab_irregular_closed_shell_dense_01` | `matlab_irregular_closed_shell_dense_01.json` | 8 | 12 | volume-only |
@@ -29,7 +30,7 @@ Auto-generated summary of regression fixtures.
 | `tolerance_small_tetra_accepted` | `tolerance_small_tetra_accepted.json` | 4 | 4 | deterministic |
 | `tolerance_small_tetra_with_default_epsilon` | `tolerance_small_tetra_rejected.json` | 4 | 4 | count+volume |
 
-Total fixtures: **24**.
+Total fixtures: **25**.
 
 Regenerate with:
 
