@@ -1,0 +1,33 @@
+{
+  "name": "irregular_closed_shell_prism_like",
+  "input": {
+    "vertices": [
+      [0.0, 0.0, 0.0],
+      [2.0, 0.0, 0.0],
+      [0.2, 1.3, 0.0],
+      [0.1, -0.1, 1.4],
+      [2.1, 0.1, 1.4],
+      [0.3, 1.2, 1.4]
+    ],
+    "faces": [
+      [0, 2, 1],
+      [3, 4, 5],
+      [0, 1, 4],
+      [0, 4, 3],
+      [1, 2, 5],
+      [1, 5, 4],
+      [2, 0, 3],
+      [2, 3, 5]
+    ]
+  },
+  "expected": {
+    "tetraVolume": 1.7173333333333334,
+    "volumeTolerance": 1e-7
+  },
+  "options": {
+    "checkInput": true,
+    "checkSelfIntersections": true,
+    "planeDistanceTolerance": 1e-10,
+    "epsilon": 1e-8
+  }
+}
