@@ -18,7 +18,7 @@ public sealed class FixtureInput
 
 public sealed class FixtureExpected
 {
-    public int TetraCount { get; init; }
+    public int? TetraCount { get; init; }
     public double TetraVolume { get; init; }
     public double VolumeTolerance { get; init; } = 1e-8;
 
