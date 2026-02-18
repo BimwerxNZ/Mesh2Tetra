@@ -9,11 +9,17 @@ Auto-generated summary of regression fixtures.
 | `intersecting_shells_fail_fast_explicit` | `intersecting_shells_fail_fast_explicit.json` | 8 | 8 | fail-fast |
 | `irregular_closed_shell_prism_like` | `irregular_closed_shell_prism_like.json` | 6 | 8 | volume-only |
 | `irregular_closed_shell_skewed_hexahedron` | `irregular_closed_shell_skewed_hexahedron.json` | 8 | 12 | volume-only |
+| `matlab_duplicate_faces_cleanup_01` | `matlab_duplicate_faces_cleanup_01.json` | 4 | 6 | volume-only |
 | `matlab_intersections_autoresolve_cluster_01` | `matlab_intersections_autoresolve_cluster_01.json` | 8 | 8 | volume-only |
 | `matlab_intersections_fail_fast_01` | `matlab_intersections_fail_fast_01.json` | 8 | 8 | fail-fast |
 | `matlab_irregular_closed_shell_dense_01` | `matlab_irregular_closed_shell_dense_01.json` | 8 | 12 | volume-only |
 | `matlab_irregular_closed_shell_dense_02` | `matlab_irregular_closed_shell_dense_02.json` | 8 | 12 | volume-only |
 | `matlab_multi_component_irregular_02` | `matlab_multi_component_irregular_02.json` | 12 | 12 | count+volume |
+| `matlab_nested_shell_like_01` | `matlab_nested_shell_like_01.json` | 8 | 8 | volume-only |
+| `matlab_nonmanifold_edge_fragment_01` | `matlab_nonmanifold_edge_fragment_01.json` | 6 | 6 | fail-fast |
+| `matlab_orientation_mixed_winding_01` | `matlab_orientation_mixed_winding_01.json` | 4 | 4 | volume-only |
+| `matlab_randomized_seeded_case_01` | `matlab_randomized_seeded_case_01.json` | 8 | 8 | volume-only |
+| `matlab_thin_feature_shell_01` | `matlab_thin_feature_shell_01.json` | 4 | 4 | volume-only |
 | `matlab_tolerance_near_coplanar_01` | `matlab_tolerance_near_coplanar_01.json` | 4 | 4 | count+volume |
 | `matlab_tolerance_small_volume_keep_01` | `matlab_tolerance_small_volume_keep_01.json` | 4 | 4 | deterministic |
 | `multi_component_four_tetra` | `multi_component_four_tetra.json` | 16 | 16 | deterministic |
@@ -25,7 +31,7 @@ Auto-generated summary of regression fixtures.
 | `tolerance_small_tetra_accepted` | `tolerance_small_tetra_accepted.json` | 4 | 4 | deterministic |
 | `tolerance_small_tetra_with_default_epsilon` | `tolerance_small_tetra_rejected.json` | 4 | 4 | count+volume |
 
-Total fixtures: **20**.
+Total fixtures: **26**.
 
 Regenerate with:
 
